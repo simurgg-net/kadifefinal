@@ -291,7 +291,7 @@ function render(){
   if(!s)return;guide();const me=s.me,P=s.players,lobby=s.phase=='lobby',my=!lobby&&s.turn==me,play=my&&s.phase=='play',cur=P[s.turn],col=o=>P[o].col,m=cm();
   $('st').textContent=lobby?`Lobi: ${P.length}/4 — arkadaşların bağlansın`:s.phase=='over'?`🏆 ${P[s.win].name} kazandı!`:s.phase=='setup'?`${cur.name}: ${s.st==='s'?'ÖNCE KÖYÜNÜ KUR':'ŞİMDİ KÖYÜNE BAĞLI BİR YOL KOY'}`:`${cur.name} oynuyor${s.mustRob?' · haydutu taşı!':''}`;
   $('win').hidden=s.phase!='over';if(s.win!=null)$('wt').textContent='🏆 '+P[s.win].name+' kazandı!';
-  $('pl').innerHTML=P.map((p,i)=>`<div class="pl ${!lobby&&i==s.turn?'cur':''}"><i class=dot style="background:${p.col}"></i>${p.name}${i==me?' (sen)':''}${p.hasDice?' 🎲':''}<span>👑 ${p.vp} · 🛣️ ${p.road}${p.longest?' ⭐':''} · 🃏 ${p.n}</span></div>`).join('');
+  v2RenderPlayers(P,s,lobby,me);
   const r=P[me]&&P[me].res;const total=r?RES.reduce((n,k)=>n+(r[k]||0),0):0;
   $('resourceTotal').textContent=total+' kaynak kartı';
   $('resourceCards').innerHTML=r?RES.flatMap(k=>rep(Math.max(0,Math.min(30,r[k]||0)),k)).map((k,i)=>`<div class="resource-card" style="--fan:${i}" title="${C[k][0]}"><span class="card-type">KADİFE</span><img src="${RIMG[k]}" alt="${C[k][0]}"><span class="card-name">${C[k][0]}</span></div>`).join(''):'<div class="empty-hand">Kaynak kartların burada görünecek.</div>';
