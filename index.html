@@ -1,0 +1,108 @@
+<!doctype html><html lang="tr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kadife</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<body>
+<div id=toast></div>
+<div id=lobby class=ov><div class="card lobby-card">
+  <div class="lobby-mark">✦ KADİFE ✦</div><div class="lobby-sub">DOSTLARINLA BİR ADA KUR</div>
+  <p class="lobby-intro">Kaynaklarını topla, yollarını kur ve adanın hâkimi ol.</p>
+  <label class="lobby-label" for=nm>OYUNCU ADI</label><input id=nm placeholder="Adını yaz..." maxlength=14>
+  <label class="dice-choice"><input id=hasDice type=checkbox> Fiziksel zar kullanacağım</label>
+  <div class="lobby-actions"><button class="lobby-primary" onclick="startHost()">✦ Yeni Oda Kur</button><button class="lobby-secondary" style="margin-top:9px" onclick="startSolo()">🎮 Tek başıma dene</button>
+  <div class="lobby-divider"><span>VEYA</span></div>
+  <label class="lobby-label" for=cd>ODA KODU</label><input id=cd placeholder="Örn. A1B2C3" maxlength=8>
+  <button class="lobby-secondary" onclick="joinRoom()">Odaya Katıl <span>→</span></button></div>
+  <div class="lobby-foot">2–4 OYUNCU · ÇEVRİM İÇİ STRATEJİ</div>
+</div></div>
+<div id=win class=ov hidden><div class=card><h1 id=wt></h1><button onclick="send({t:'reset'})">Yeni oyun</button></div></div>
+<div id=rules class=ov hidden onclick="this.hidden=true"><div class=card style="max-width:540px;text-align:left;max-height:86vh;overflow:auto"><h1>📖 Kurallar</h1>
+<p><b>Amaç:</b> 10 puana ilk ulaşan kazanır. Köy 1, şehir 2 puan; 5+ uzunlukta en uzun yol +2.</p>
+<p><b>Kurulum:</b> Sırayla herkes 1 köy + 1 yol koyar, sonra ters sırayla 2. köy + yol. 2. köyün çevresindeki araziler birer kaynak verir.</p>
+<p><b>Tur:</b> 1) Zar at: çıkan sayılı araziye değen köy 1, şehir 2 kaynak alır. 2) Kur ya da takas yap. 3) Turu bitir.</p>
+<p><b>7 gelirse:</b> 7'den fazla kartı olan yarısını kaybeder; zar atan haydutu başka araziye koyar ve komşudan 1 kart çalar. Haydutlu arazi üretmez.</p>
+<p><b>Maliyetler:</b><br>🛣️ Yol: 1 odun + 1 tuğla<br>🏠 Köy: 1 odun + 1 tuğla + 1 koyun + 1 buğday<br>🏙️ Şehir (köyü yükseltir): 2 buğday + 3 maden</p>
+<p><b>Yerleşim:</b> Köyün komşu köşeleri boş olmalı (iki köy arası en az 2 yol). Köy ve yol kendi yol ağına bağlanmalı. Rakibin köyü senin yolunu keser.</p>
+<p><b>Liman takası:</b> Kıyıdaki limanlardan birine bağlı köyün/şehrin varsa liman avantajını kullanırsın. Genel liman 3 aynı kart → 1 kart; kaynak limanı 2 aynı kart → 1 kart. Limanın yoksa banka 4:1 takas yapar.</p>
+<p><b>Gelişim kartları:</b> 1 koyun + 1 buğday + 1 maden karşılığında desteden 1 kart al. Aldığın kartı aynı tur oynayamazsın; tur başına en fazla 1 gelişim kartı oynanır. Şövalye haydutu taşır ve en büyük ordu (3 şövalye) +2 puan verir. Yol yapımı 2 ücretsiz yol; Bolluk Yılı 2 kaynak; Tekel seçilen kaynağı rakiplerden toplar. Zafer puanı gizlidir ve otomatik sayılır. Deste: 14 şövalye, 5 zafer puanı, 2 Yol Yapımı, 2 Bolluk Yılı, 2 Tekel.</p></div></div>
+<div id=app><div id=bw>
+<div class="board-ribbon"><span class="ribbon-mark">✦</span><b>KADİFE ADASI</b><span class="ribbon-sub">Yollarını kur · Kaynaklarını paylaş · Zaferi kazan</span><span class="ribbon-mark">✦</span></div>
+<svg id=b viewBox="-5.1 -5.1 10.2 10.2"></svg>
+<section id="handDock" aria-label="Oyuncu kartları">
+  <div class="dock-head">
+    <div class="dock-title"><span class="dock-mark">✦</span> ELİNDEKİ KARTLAR</div>
+    <div class="dock-total" id="resourceTotal">0 kaynak kartı</div>
+  </div>
+  <div class="dock-content">
+    <div class="resource-hand">
+      <div class="hand-label">KAYNAKLAR</div>
+      <div id="resourceCards" class="resource-cards"><div class="empty-hand">Kaynak kartların burada görünecek.</div></div>
+    </div>
+    <div class="dock-divider"></div>
+    <div class="skill-hand">
+      <div class="hand-label">GELİŞİM KARTLARI <span class="soon-tag">25 KARTLIK DESTE</span></div>
+      <div id="skillCards" class="skill-cards">
+        <div class="skill-empty">
+          <div class="skill-back"><span>✦</span><b>KADİFE</b><small>GELİŞİM</small></div>
+          <div class="skill-empty-copy"><b>Gelişim kartların burada</b><small>Kaynak maliyeti: 🐑 + 🌾 + ⛰️</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<div id="side" aria-label="Oyun paneli">
+  <header class="side-brand"><div class="brand-emblem">✦</div><div><h1>KADİFE</h1><small>ADA TİCARET BİRLİĞİ</small></div></header>
+  <div class="side-room card" id="room"></div>
+  <div id="st" class="turn-banner" style="font-weight:600"></div>
+  <div class="side-section"><div class="section-heading"><span>OYUNCULAR</span><i></i></div><div id="pl" class="player-list"></div></div>
+  <div id="guide" class="card guide-panel"></div>
+  <section class="chat-panel" aria-label="Oyuncu sohbeti">
+    <header class="chat-heading"><div><span class="chat-seal">✉</span><div><b>ADA MEYDANI</b><small>Oyuncular arası sohbet & pazarlık</small></div></div><span class="chat-live"><i></i> ODA</span></header>
+    <div id="chatMessages" class="chat-messages" aria-live="polite"><div class="chat-empty">Henüz mesaj yok.<br><span>İlk selamı sen ver!</span></div></div>
+    <form id="chatForm" class="chat-compose" onsubmit="event.preventDefault();sendChatMessage()">
+      <input id="chatInput" maxlength="240" autocomplete="off" placeholder="Nazikçe bir teklif yaz..." aria-label="Sohbet mesajı">
+      <button type="submit" aria-label="Mesajı gönder">➤</button>
+    </form>
+    <div class="chat-footnote">🤝 İyi pazarlıklar, güzel oyunlar.</div>
+  </section>
+  <div class="side-section game-record"><div class="section-heading"><span>ADA GÜNLÜĞÜ</span><i></i></div><div id="log"></div></div>
+</div>
+<div id="actionDock" class="action-dock">
+  <div class="action-dice"><div class="action-label">ZARLAR</div><div class="dice" id="dice" aria-live="polite"></div></div>
+  <div class="action-controls">
+    <div class="action-label">İNŞAAT VE GELİŞİM</div>
+    <div id="tools" class="tool-buttons">
+      <button id="mr" onclick="mode='r';render()">🛣️ Yol yap</button>
+      <button id="ms" onclick="mode='s';render()">🏠 Köy kur</button>
+      <button id="mc" onclick="mode='c';render()">🏙️ Şehir</button>
+      <button id="buyDev" onclick="send({t:'buyDev'})">🃏 Gelişim kartı al (25)</button>
+      <button id="openShop" class="shop-open" onclick="openShop()">🏪 Mağaza <span>Kaynak takası</span></button>
+      <button class="end-turn" onclick="send({t:'end'})">Turu bitir <b>→</b></button>
+    </div>
+    <div class="action-starts">
+      <button id="start" onclick="send({t:'start'})">▶ Oyunu başlat</button>
+      <button id="roll" onclick="send({t:'roll'})">🎲 Zarları at</button>
+      <div id="manualRoll" hidden class="manual-roll"><small>Fiziksel zarları at ve gelen sonuçları gir:</small><div class="dice-inputs"><input id="die1" type="number" min="1" max="6" value="3" aria-label="Birinci zar"><input id="die2" type="number" min="1" max="6" value="4" aria-label="İkinci zar"></div><button onclick="send({t:'manualRoll',a:Number($('die1').value),b:Number($('die2').value)})">🎲 Sonucu gönder</button></div>
+    </div>
+  </div>
+</div>
+</div>
+<div id="shopOverlay" class="shop-overlay" hidden onclick="if(event.target===this)closeShop()">
+  <section class="shop-panel" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+    <header class="shop-head"><div><div class="shop-kicker">KADİFE TİCARET ODASI</div><h2 id="shopTitle">🏪 Kaynak Mağazası</h2><p>Kaynaklarını bankayla veya sahip olduğun liman avantajıyla takas et.</p></div><button class="shop-close" onclick="closeShop()" aria-label="Mağazayı kapat">✕</button></header>
+    <div class="shop-tabs"><button class="shop-tab active" data-tab="bank" onclick="setShopTab('bank')">🏦 BANKA</button><button class="shop-tab" data-tab="port" onclick="setShopTab('port')">⚓ LİMAN</button><button class="shop-tab" data-tab="player" onclick="setShopTab('player')">🤝 OYUNCU TAKASI</button></div>
+    <div class="shop-stock"><div class="shop-section-title">ENVANTERİN · SÜRÜKLEYİP BIRAK</div><div id="shopStock" class="shop-stock-grid"></div></div>
+    <div id="shopBankArea" class="shop-trade-card"><div class="shop-section-title">TAKAS TEZGAHI</div>
+      <div class="shop-drag-layout"><div id="shopGiveDrop" class="shop-drop" ondragover="shopDragOver(event)" ondragleave="shopDragLeave(event)" ondrop="shopDropGive(event)"><strong>BURAYA KAYNAK KARTINI BIRAK</strong><div id="shopGiveIcon" class="shop-needed">🪵</div><div class="shop-need-meter"><div id="shopNeed" class="shop-count-pill">0 / 4</div><div id="shopRemaining" class="shop-count-sub">4 kart daha sürükle</div></div><div id="shopSelectedCards" class="shop-selected-cards"></div><small id="shopGiveName">Henüz kaynak seçilmedi</small><button class="shop-clear" onclick="clearShopSelection()">↺ Kartları sıfırla</button></div>
+      <div class="shop-drop"><strong>ALACAĞIN KAYNAĞI SEÇ</strong><div class="shop-get-grid" id="shopGetGrid"></div><small>Bir kaynak simgesine dokunarak seç.</small></div></div>
+      <div class="shop-rate" id="tradeRate">Banka oranı: 4:1</div><div class="shop-explain" id="shopExplain">Elindeki kartlardan gerekli miktarı sürükle.</div>
+      <button id="shopBankConfirm" class="shop-confirm" onclick="confirmShopTrade()" disabled>TAKASI GERÇEKLEŞTİR →</button>
+    </div>
+    <div id="shopPlayerArea" class="shop-player-trade" hidden><div class="shop-section-title">OYUNCUYA TAKAS TEKLİFİ GÖNDER</div><p class="shop-explain">Bir oyuncu seç, vereceğin ve isteyeceğin kaynakları belirle. Teklif karşı oyuncunun ekranında büyük bir bildirim olarak görünür.</p><div class="shop-player-row"><label>Oyuncu <select id="shopTarget"></select></label><label>Vereceğin <select id="shopPlayerGive"></select></label><label>İstediğin <select id="shopPlayerGet"></select></label></div><div class="shop-player-row"><label>Vereceğin adet <input id="shopGiveN" type="number" min="1" value="1" style="width:72px"></label><label>İstediğin adet <input id="shopGetN" type="number" min="1" value="1" style="width:72px"></label></div><button class="shop-confirm" onclick="sendPlayerTradeOffer()">📨 TAKAS TEKLİFİ GÖNDER</button><div id="shopOfferStatus" class="shop-explain"></div></div>
+    <div class="shop-info"><b>⚓ Liman avantajı</b><span>Kaynak limanı: 2:1 · Genel liman: 3:1 · Limanın yoksa: 4:1</span></div>
+  </section>
+</div>
+<div id="tradeAlert" class="trade-alert" role="alertdialog" aria-live="assertive"><h2>🤝 TAKAS İSTEĞİ VAR!</h2><p id="tradeAlertText"></p><button class="accept" id="tradeAccept">✓ TAKASI KABUL ET</button><button class="decline" id="tradeDecline">✕ REDDET</button></div>
+
+<script src="game.js"></script>
