@@ -407,22 +407,20 @@ button:disabled{filter:saturate(.45)}
 }
 
 
-/* KADİFE — sohbet aç/kapat ve bütünsel kahverengi palet */
-.chat-head-actions{display:flex;align-items:center;gap:7px}
-.chat-toggle{margin:0;padding:5px 9px;border:1px solid #b58a55;border-radius:7px;background:linear-gradient(180deg,#8b6039,#654126);color:#fff0cf;font:800 9px Inter,sans-serif;box-shadow:0 2px 0 #4a2d1a}
-.chat-toggle:hover{filter:brightness(1.1)}
-.chat-body{display:flex;flex:1 1 auto;min-height:0;flex-direction:column;overflow:hidden}
-.chat-collapsed{flex:0 0 auto!important;min-height:0!important}
+/* KADIFE: sıcak ceviz tonları ve daraltılabilir sohbet */
+#side{background:linear-gradient(160deg,#59331d 0%,#3b2417 58%,#29180f 100%);border-left:5px solid #a8753c;box-shadow:inset 4px 0 0 #d2a45f33,inset 0 0 0 1px #f4d9a322;color:#f4e5c8}
+.side-brand{border-bottom-color:#d0a76b55}
+.side-brand h1{color:#f4d18a;text-shadow:0 1px 2px #160b05}
+.side-brand small,.section-heading{color:#e0bd82}
+#side .pl{background:linear-gradient(135deg,#69452b,#4b2e1c);border-color:#a87943;color:#f7e8cb}
+#side .pl.cur{background:linear-gradient(135deg,#876039,#654326);border-color:#e1bd78;color:#fff0cf}
+#side .game-record #log{color:#e0c394}
+.chat-panel{min-height:190px;background:linear-gradient(180deg,#f7e9ca,#e8d2a8);border-color:#bd925b;transition:min-height .22s ease,flex-basis .22s ease,box-shadow .22s ease}
+.chat-heading-actions{display:flex;align-items:center;gap:9px}
+.chat-toggle{width:27px;height:27px;flex:0 0 27px;margin:0;padding:0;border:1px solid #d9b878;border-radius:7px;background:linear-gradient(180deg,#87582f,#56331d);color:#fff0ce;font:800 18px/1 Inter,sans-serif;box-shadow:0 2px 0 #3a2113}
+.chat-toggle:hover{filter:brightness(1.12)}
+.chat-content{display:flex;flex:1 1 auto;min-height:0;flex-direction:column;overflow:hidden;opacity:1;transition:opacity .16s ease}
+.chat-collapsed{min-height:0!important;flex:0 0 auto!important}
+.chat-collapsed .chat-content{display:none}
 .chat-collapsed .chat-heading{border-bottom:0}
-.chat-panel{transition:flex-basis .22s ease,min-height .22s ease,box-shadow .22s ease}
-/* Mavi/yeşil ağırlığı azaltılmış, kahve–ceviz–bronz masa oyunu görünümü */
-:root{--sea:#765033;--sea-deep:#4a3020;--wood:#684326;--wood-dark:#3d281b;--gold:#d7b36d;--gold-light:#f5e2b5;--parch:#f4e7ca;--ink:#49321f;--panel:#ead7b0}
-body{background:radial-gradient(ellipse at 48% 18%,#8b6747 0%,#65452e 55%,#352319 100%)}
-#app{background:linear-gradient(135deg,#65452e,#3c281d)}
-#bw{background:radial-gradient(ellipse at 50% 44%,#8b6747 0%,#6c4b32 65%,#4b3020 100%);border-right:1px solid #d5b47766}
-.board-ribbon{color:#f8e8c3;text-shadow:0 2px 4px #352319}
-.ribbon-sub{color:#ead7b6}
-.turn-banner{background:linear-gradient(135deg,#805632,#573820);border-color:#d0ad69;color:#fff0ce!important;box-shadow:0 3px 0 #3d281b}
-.chat-seal{background:linear-gradient(145deg,#805632,#4b2d1b)}
-.chat-compose button{background:linear-gradient(180deg,#8b6039,#5b351e);box-shadow:0 2px 0 #442513}
-#actionDock{background:linear-gradient(180deg,#765033,#422b1c)}
+@media(max-width:820px){.chat-collapsed{min-height:0!important;max-height:none!important}}

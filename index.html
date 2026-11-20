@@ -63,8 +63,8 @@
   <div class="side-section"><div class="section-heading"><span>OYUNCULAR</span><i></i></div><div id="pl" class="player-list"></div></div>
   <div id="guide" class="card guide-panel"></div>
   <section class="chat-panel" aria-label="Oyuncu sohbeti">
-    <header class="chat-heading"><div><span class="chat-seal">✉</span><div><b>ADA MEYDANI</b><small>Oyuncular arası sohbet & pazarlık</small></div></div><div class="chat-head-actions"><span class="chat-live"><i></i> ODA</span><button type="button" id="chatToggle" class="chat-toggle" aria-expanded="true" aria-controls="chatBody" onclick="toggleChat()">− Gizle</button></div></header>
-    <div id="chatBody" class="chat-body">
+    <header class="chat-heading"><div><span class="chat-seal">✉</span><div><b>ADA MEYDANI</b><small>Oyuncular arası sohbet & pazarlık</small></div></div><div class="chat-heading-actions"><span class="chat-live"><i></i> ODA</span><button type="button" class="chat-toggle" id="chatToggle" aria-expanded="true" aria-controls="chatContent" onclick="toggleChat()">−</button></div></header>
+    <div class="chat-content" id="chatContent">
     <div id="chatMessages" class="chat-messages" aria-live="polite"><div class="chat-empty">Henüz mesaj yok.<br><span>İlk selamı sen ver!</span></div></div>
     <form id="chatForm" class="chat-compose" onsubmit="event.preventDefault();sendChatMessage()">
       <input id="chatInput" maxlength="240" autocomplete="off" placeholder="Nazikçe bir teklif yaz..." aria-label="Sohbet mesajı">
@@ -112,17 +112,13 @@
 </div>
 <div id="tradeAlert" class="trade-alert" role="alertdialog" aria-live="assertive"><h2>🤝 TAKAS İSTEĞİ VAR!</h2><p id="tradeAlertText"></p><button class="accept" id="tradeAccept">✓ TAKASI KABUL ET</button><button class="decline" id="tradeDecline">✕ REDDET</button></div>
 
-<script src="game.js"></script>
-
 <script>
 function toggleChat(){
- const panel=document.querySelector('.chat-panel');
- const body=document.getElementById('chatBody');
- const btn=document.getElementById('chatToggle');
- if(!panel||!body||!btn)return;
- const collapsed=panel.classList.toggle('chat-collapsed');
- body.hidden=collapsed;
- btn.setAttribute('aria-expanded',String(!collapsed));
- btn.textContent=collapsed?'＋ Aç':'− Gizle';
+  const panel=document.querySelector('.chat-panel');
+  const button=document.getElementById('chatToggle');
+  const collapsed=panel.classList.toggle('chat-collapsed');
+  button.setAttribute('aria-expanded',String(!collapsed));
+  button.textContent=collapsed?'+':'−';
 }
 </script>
+<script src="game.js"></script>
