@@ -129,11 +129,18 @@ function act(b){
     if(t=='settle'){if(g.st!='s')return{err:'Şimdi yol koy'};if(!g.V[b.id]||!free(b.id))return{err:'Buraya olmaz'};
       g.V[b.id].o=me;g.last=b.id;g.st='r';
       if(g.si>=g.players.length)g.hexes.forEach(h=>{if(h.res!='desert'&&h.v.includes(b.id))p.res[h.res]++});return{}}
-    if(t==='buyDev'){
+if(t==='buyDev'){
     if(!can(p,COST.dev))return{err:'Gelişim kartı için 1 koyun + 1 buğday + 1 maden gerekli.'};
     if(!g.devDeck.length)return{err:'Gelişim kartı destesi tükendi.'};
-    pay(p,COST.dev);const card=g.devDeck.pop();p.dev=p.dev||[];p.dev.push(card);p.devFresh=(p.devFresh||0)+1;L(p.name+' kapalı bir gelişim kartı aldı.');return{};
-  }
+    pay(p,COST.dev);
+    const card=g.devDeck.pop();
+    p.dev=p.dev||[];
+    p.dev.push(card);
+    p.devFresh=(p.devFresh||0)+1;
+    L(p.name+' kapalı bir gelişim kartı aldı.');
+    checkWin(me);
+    return{};
+}
   if(t==='playDev'){
     const card=p.dev?.[b.index];if(!card)return{err:'Bu gelişim kartı elinde yok.'};if(b.index>=p.dev.length-(p.devFresh||0))return{err:'Aldığın gelişim kartını bu tur oynayamazsın.'};
     if(g.devPlayed)return{err:'Bu tur zaten bir gelişim kartı oynadın.'};
